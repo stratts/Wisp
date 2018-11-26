@@ -65,7 +65,6 @@ namespace Wisp.Handlers
                 var life = particle.GetComponent<Lifetime>();
                 life.Time = 0;
                 life.MaxTime = pLife;
-                Console.WriteLine("Reused particle");
             }
             else {
                 particle = new Particle(pVel, pScale, pRot, pLife)
@@ -75,7 +74,6 @@ namespace Wisp.Handlers
                     Pos = emitter.ScenePos
                 };
 
-                Console.WriteLine("Created new particle");
                 particles.Add(particle);
             }
 
