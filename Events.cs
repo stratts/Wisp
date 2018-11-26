@@ -8,11 +8,11 @@ namespace Wisp
     public class Event
     {
         public Node source;
+        public Node target;
     }
 
     public class CollisionEvent : Event
-    {   
-        public Node target;
+    {     
         public Collision collision;
     }
 }
