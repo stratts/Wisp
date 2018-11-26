@@ -12,7 +12,7 @@ namespace Wisp.Components
 {
     public class AI : Component
     {
-        public AIStateMachine stateMachine;
+        public IStateMachine stateMachine;
 
         public void Run(Node node, Scene scene)
         {
@@ -30,37 +30,40 @@ namespace Wisp
         void Run(Node node, Scene scene);
     }
 
-    public enum AIState { Idle, Chase, Jump, Test };
+    public interface IStateMachine {
+        void ChooseState(Node node, Scene scene);
+        void Run(Node node, Scene scene);
+    }
 
-    public abstract class AIStateMachine
+    public abstract class AIStateMachine<TEnum> : IStateMachine
     {
-        public AIState currentState { get; protected set; }
+        public TEnum currentState { get; protected set; }
         public ILogic BackgroundLogic = null;
         ILogic currentStateLogic;
 
-        Dictionary<AIState, ILogic> states;
+        Dictionary<TEnum, ILogic> states;
 
         public AIStateMachine()
         {
-            states = new Dictionary<AIState, ILogic>();
+            states = new Dictionary<TEnum, ILogic>();
         }
 
-        public void AddState(AIState state, ILogic logic)
+        public void AddState(TEnum state, ILogic logic)
         {
             states.Add(state, logic);
         }
 
-        public void RemoveState(AIState state)
+        public void RemoveState(TEnum state)
         {
             states.Remove(state);
         }
 
-        public void EditState(AIState state, ILogic logic)
+        public void EditState(TEnum state, ILogic logic)
         {
             states[state] = logic;
         }
 
-        public void SetState(AIState state)
+        public void SetState(TEnum state)
         {
             try
             {
