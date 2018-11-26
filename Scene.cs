@@ -177,6 +177,11 @@ namespace Wisp
         {
             Type sceneClass = sceneTypes[name];
             var scene = (Scene)Activator.CreateInstance(sceneClass);
+            SetupScene(scene);
+            return scene;
+        }
+
+        private void SetupScene(Scene scene) {
             scene.sceneManager = this;
             scene.SetViewport(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
@@ -184,7 +189,6 @@ namespace Wisp
                 scene.process.AddHandler(handler.Key, (IProcessHandler)Activator.CreateInstance(handler.Value));
             foreach (var handler in customEventHandlers)
                 scene.process.AddEventHandler(handler.Item1, (IEventHandler)Activator.CreateInstance(handler.Item2));
-            return scene;
         }
 
         public void AddScene<T>() where T : Scene 
@@ -225,12 +229,20 @@ namespace Wisp
             activeScenes.Remove(name);
         }
 
-        public void AddUI(string name)
+        public void AddUI(Scene scene) {
+            SetupScene(scene);
+            scene.Load(game);
+            UIScenes.Add(scene);
+            CurrentScenes[SceneType.World].process.DisableProcessing<Components.Input>();
+        }
+
+        public Scene AddUI(string name)
         {
             var scene = CreateScene(name);
             scene.Load(game);
             UIScenes.Add(scene);
             CurrentScenes[SceneType.World].process.DisableProcessing<Components.Input>();
+            return scene;
         }
 
         public void RemoveUI()
