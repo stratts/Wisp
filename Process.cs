@@ -40,6 +40,7 @@ namespace Wisp
             eventHandlers = new Dictionary<Type, List<IEventHandler>>();
 
             AddHandler<AI>(new AIHandler());
+            AddHandler<Input>(new ScriptHandler());
             AddHandler<Script>(new ScriptHandler());          
             AddHandler<Moveable>(new MovementHandler());
             AddHandler<Parallax>(new ParallaxHandler());

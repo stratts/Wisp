@@ -39,6 +39,8 @@ namespace Wisp.Components
         public ILogic logic;
     }
 
+    public class Input : Script { }
+
     public class Solid : Component { }
 
     public class Collidable : Component
