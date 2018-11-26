@@ -146,7 +146,7 @@ namespace Wisp
 
         private Game game;
         private GraphicsDeviceManager graphics;
-        private Dictionary<string, Scene> scenes;
+        private Dictionary<string, Scene> activeScenes;
         private Dictionary<string, Type> sceneTypes = new Dictionary<string, Type>();
         public Dictionary<SceneType, Scene> CurrentScenes;
         public Dictionary<SceneType, Scene> NextScenes;
@@ -154,12 +154,15 @@ namespace Wisp
         private List<SceneType> renderOrder;
         private Stack<Scene> toRemove;
         private Transition transition = null;
-        
+
+        private Dictionary<Type, Type> customHandlers = new Dictionary<Type, Type>();
+        private Dictionary<Type, Type> customEventHandlers = new Dictionary<Type, Type>();
+
         public SceneManager(Game game, GraphicsDeviceManager graphics)
         {
             this.game = game;
             this.graphics = graphics;
-            scenes = new Dictionary<string, Scene>();
+            activeScenes = new Dictionary<string, Scene>();
             CurrentScenes = new Dictionary<SceneType, Scene>();
             NextScenes = new Dictionary<SceneType, Scene>();
             UIScenes = new List<Scene>();
@@ -176,6 +179,11 @@ namespace Wisp
             var scene = (Scene)Activator.CreateInstance(sceneClass);
             scene.sceneManager = this;
             scene.SetViewport(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+            foreach (var handler in customHandlers)
+                scene.process.AddHandler(handler.Key, (IProcessHandler)Activator.CreateInstance(handler.Value));
+            foreach (var handler in customEventHandlers)
+                scene.process.AddEventHandler(handler.Key, (IEventHandler)Activator.CreateInstance(handler.Value));
             return scene;
         }
 
@@ -185,13 +193,23 @@ namespace Wisp
             sceneTypes.Add(type.Name, type);
         }
 
-        public void AddScene(string name)
+        public void AddHandler<T1, T2>() where T1 : Components.Component where T2 : IProcessHandler
         {
-            var scene = CreateScene(name);
-            scenes.Add(scene.name, scene);
+            customHandlers.Add(typeof(T1), typeof(T2));
         }
 
-        public void RemoveScene(string name)
+        public void AddEventHandler<T1, T2>() where T1 : Event where T2 : IEventHandler
+        {
+            customEventHandlers.Add(typeof(T1), typeof(T2));
+        }
+
+        private void AddScene(string name)
+        {
+            var scene = CreateScene(name);
+            activeScenes.Add(scene.name, scene);
+        }
+
+        private void RemoveScene(string name)
         {
             var scene = GetScene(name);
 
@@ -204,7 +222,7 @@ namespace Wisp
                 }
             }
 
-            scenes.Remove(name);
+            activeScenes.Remove(name);
         }
 
         public void AddUI(string name)
@@ -234,8 +252,8 @@ namespace Wisp
 
         public Scene GetScene(string name)
         {
-            if (!scenes.ContainsKey(name)) AddScene(name);
-            return scenes[name];
+            if (!activeScenes.ContainsKey(name)) AddScene(name);
+            return activeScenes[name];
         }
 
         public bool IsCurrentScene(SceneType type, string name)
@@ -248,7 +266,7 @@ namespace Wisp
 
         public void SetCurrentScene(SceneType type, string name)
         {
-            if (!scenes.ContainsKey(name)) AddScene(name);
+            if (!activeScenes.ContainsKey(name)) AddScene(name);
             var scene = GetScene(name);
             scene.update = true;
             NextScenes[type] = scene;
@@ -268,7 +286,7 @@ namespace Wisp
             CurrentScenes[type].update = false;
 
             this.transition.TransitionScene.Load(game);
-            scenes.TryGetValue(name, out var scene);
+            activeScenes.TryGetValue(name, out var scene);
             if (scene != null) scene.update = false;
         }
 
@@ -301,7 +319,7 @@ namespace Wisp
                 NextScenes.TryGetValue(type, out var scene);
                 if (scene != null)
                 {
-                    scenes.Remove(scene.name);
+                    activeScenes.Remove(scene.name);
                     scene.Unload();
                     NextScenes.Remove(type);            
                 }

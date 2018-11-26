@@ -90,33 +90,38 @@ namespace Wisp
             }
         }   
         
+        public void AddHandler(Type type, IProcessHandler handler)
+        {
+            processHandlers.Add(type, handler);
+            processHandlerList.Add(type);
+            EnableProcessing(type);
+        }
 
         private void AddHandler<T>(IProcessHandler handler) where T : Component
         {
-            processHandlers.Add(typeof(T), handler);
-            processHandlerList.Add(typeof(T));
-            EnableProcessing<T>();
+            AddHandler(typeof(T), handler);
         }
 
-        private void AddEventHandler<T>(IEventHandler handler) where T : Event
+        public void AddEventHandler(Type type, IEventHandler handler)
         {
-            var type = typeof(T);
             eventHandlers.TryGetValue(type, out List<IEventHandler> list);
-
             if (list == null) eventHandlers[type] = new List<IEventHandler>();
             eventHandlers[type].Add(handler);
         }
 
-        public void EnableProcessing<T>() where T : Component
+        private void AddEventHandler<T>(IEventHandler handler) where T : Event
         {
-            processEnabled[typeof(T)] = true;
+            AddEventHandler(typeof(T), handler);
         }
 
-        public void DisableProcessing<T>() where T : Component
-        {
-            processEnabled[typeof(T)] = false;
-        }
+        public void EnableProcessing(Type type) => processEnabled[type] = true;
 
+        public void EnableProcessing<T>() where T : Component => EnableProcessing(typeof(T));
+
+        public void DisableProcessing(Type type) => processEnabled[type] = false;
+
+        public void DisableProcessing<T>() where T : Component => DisableProcessing(typeof(T));
+ 
         public bool ProcessingEnabled<T>() where T : Component
         {
             return processEnabled[typeof(T)];
