@@ -230,11 +230,14 @@ namespace Wisp
             var scene = CreateScene(name);
             scene.Load(game);
             UIScenes.Add(scene);
+            CurrentScenes[SceneType.World].process.DisableProcessing<Components.Input>();
         }
 
         public void RemoveUI()
         {
             if (UIScenes.Count > 0) toRemove.Push(UIScenes[UIScenes.Count - 1]);
+            if (UIScenes.Count == 1)
+                CurrentScenes[SceneType.World].process.EnableProcessing<Components.Input>();
         }
 
         public void RemoveUI(string name)
