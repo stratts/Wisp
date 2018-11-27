@@ -92,6 +92,7 @@ namespace Wisp
 
         public void RenderNode(Node node)
         {
+            if (!node.active) return;
             if (node is Drawable drawNode) RenderDrawable(drawNode);
             foreach (var child in node.Children) RenderNode(child);
         }

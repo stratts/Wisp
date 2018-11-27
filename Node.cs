@@ -139,6 +139,7 @@ namespace Wisp
             {
                 nodeManager.nodesChanged = true;
             }
+            else if (parent != null) parent.NodesChanged();
         }
 
         public Vector2 GetCentrePos()
@@ -246,6 +247,7 @@ namespace Wisp
 
         private void UpdateNode(Node node)
         {
+            if (!node.active) return;
             node.UpdateScenePos();
             AddComponents(node);
             foreach (var child in node.Children) UpdateNode(child);
