@@ -107,5 +107,30 @@ namespace Wisp
 
             return (int)Direction.Left;
         }
+
+
+        public static Node FindClosestNode(Node node, IReadOnlyCollection<Node> targets, float maxDist)
+        {
+            Node closest = null;
+
+            float maxDistSquared = (float)Math.Pow(maxDist, 2);
+            float lowestDistSquared = -1;
+
+            foreach (Node target in targets)
+            {
+                var distSquared = Vector2.DistanceSquared(node.Pos, target.Pos);
+
+                if (distSquared < maxDistSquared)
+                {
+                    if (lowestDistSquared < 0 || distSquared < lowestDistSquared)
+                    {
+                        lowestDistSquared = distSquared;
+                        closest = target;
+                    }
+                }
+            }
+
+            return closest;
+        }
     }
 }
