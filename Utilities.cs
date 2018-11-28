@@ -123,7 +123,7 @@ namespace Wisp
 
             foreach (Node target in targets)
             {
-                var distSquared = Vector2.DistanceSquared(node.GetCentrePos(), target.GetCentrePos());
+                var distSquared = Vector2.DistanceSquared(node.CentrePos, target.CentrePos);
 
                 if (distSquared < maxDistSquared)
                 {

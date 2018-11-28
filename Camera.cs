@@ -61,7 +61,7 @@ namespace Wisp
 
             if (Target != null)
             {
-                var targetPos = Target.GetCentrePos();
+                var targetPos = Target.CentrePos;
 
                 Pos = targetPos.ToPoint().ToVector2();
                 Pos.X -= (width / zoom) / 2;

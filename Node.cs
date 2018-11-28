@@ -143,10 +143,7 @@ namespace Wisp
             else if (parent != null) parent.NodesChanged();
         }
 
-        public Vector2 GetCentrePos()
-        {
-            return new Vector2(Pos.X + (Size.X / 2), Pos.Y + (Size.Y / 2));
-        }
+        public Vector2 CentrePos => new Vector2(Pos.X + (Size.X / 2), Pos.Y + (Size.Y / 2));    
     }
 
     public class NodeManager
