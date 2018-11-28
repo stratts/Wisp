@@ -82,12 +82,13 @@ namespace Wisp
         {
             component.Parent = this;
             components[component.GetType()] = component;
+            NodesChanged();
             return component;
-
         }
 
         public void RemoveComponent<T>() where T : Component
         {
+            NodesChanged();
             components.Remove(typeof(T));
         }
 
