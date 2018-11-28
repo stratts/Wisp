@@ -43,9 +43,10 @@ namespace Wisp.Nodes
     {
         private bool wrap = false;
         private string contents = "";
-        private bool textChanged = true;
-        private string _string;
+        protected string _string = "";
         private Point renderSize;
+        protected int index = 0;
+        protected bool textChanged = false;
 
         public string FontPath { get; set; }
         public SpriteFont Font { get; set; } = null;
@@ -80,26 +81,69 @@ namespace Wisp.Nodes
             }
         }
 
-        public string String
+        public virtual string String
         {
             get
             {
-                if (textChanged)
-                {
-                    if (Wrap) _string = TextTools.WrapText(Contents, Font, Size.X);
-                    else _string = Contents;
-                    textChanged = false;
-
-                    var size = Font.MeasureString(_string);
-                    renderSize = new Point((int)size.X, (int)size.Y);
-                }
-
-                return _string;
+                if (textChanged) UpdateString();
+                if (index == _string.Length) return _string;
+                return _string.Substring(0, index);
             }
         }
 
-        public override Point RenderSize { get { return renderSize; } }
+        protected void UpdateString()
+        {
+            if (Font == null) return;
+            if (Wrap) _string = TextTools.WrapText(Contents, Font, Size.X);
+            else _string = Contents;
+            index = _string.Length;
 
+            var size = Font.MeasureString(_string);
+            renderSize = new Point((int)size.X, (int)size.Y);
+            textChanged = false;
+        }
+
+        public override Point RenderSize { get { return renderSize; } }
+    }
+
+    public class AnimatedText : Text
+    {
+        public int Index { get => index; set => index = value; }
+        public int MaxIndex => _string.Length;
+        private int speed;
+
+        public AnimatedText(Vector2 pos, string font, int speed) : base(pos, font)
+        {
+            this.speed = speed;   
+        }
+
+        public override string String
+        {
+            get {
+                if (textChanged) {
+                    UpdateString();
+                    SetAnimation();
+                    index = 0;
+                }
+                return base.String;
+            }
+        }
+
+        public void SetAnimation()
+        {
+            if (HasComponent<Animated>()) RemoveComponent<Animated>();
+
+            var group = new AnimationGroup();
+            var anim = group.AddAnimation("draw");
+            var index = anim.AddTrack(AnimationProperty.StringIndex);
+            index.Loop = false;
+            index.Length = (float)_string.Length / speed;
+            index.Ease = EaseType.Linear;
+            index.AddFrame(0, 0);
+            index.AddFrame(index.Length, _string.Length);
+
+            AddComponent(new Animated(group));
+        }
     }
 
     public class Background : Drawable

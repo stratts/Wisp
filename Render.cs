@@ -35,6 +35,7 @@ namespace Wisp
             renderEnabled = new Dictionary<Type, bool>();
 
             AddHandler<Text>(Text);
+            AddHandler<AnimatedText>(Text);
             AddHandler<Sprite>(Sprite);
             AddHandler<AnimatedSprite>(AnimatedSprite);
             AddHandler<Background>(Background);

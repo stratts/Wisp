@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wisp
 {
-    public enum AnimationProperty { PosX, PosY, Frame, Scale, Rotation, Opacity }
+    public enum AnimationProperty { PosX, PosY, Frame, Scale, Rotation, Opacity, StringIndex }
 
     public class AnimationGroup
     {

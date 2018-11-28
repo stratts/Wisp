@@ -41,7 +41,10 @@ namespace Wisp.Handlers
                         break;
                     case AnimationProperty.PosY:
                         node.Pos = new Vector2(node.Pos.X, value);
-                        break;    
+                        break;
+                    case AnimationProperty.StringIndex:
+                        if (node is AnimatedText text) text.Index = (int)value;
+                        break;
                 }
             }
         }
