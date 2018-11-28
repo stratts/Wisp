@@ -138,4 +138,35 @@ namespace Wisp
             return closest;
         }
     }
+
+    public static class AnimTools
+    {
+        public static void FrameAnimation(AnimationGroup group, string name, int start, int end, float interval, bool loop = true)
+        {
+            var track = group.AddAnimation(name).AddTrack(AnimationProperty.Frame);
+            track.Length = (end - start + 1) * interval;
+            track.Ease = EaseType.Linear;
+            track.Loop = loop;
+            track.AddFrame(0, start);
+            track.AddFrame((end - start) * interval, end);
+        }
+
+        public static void BasicAnimation(AnimationGroup group, string name, AnimationProperty property, float start, float end,
+            float length, EaseType ease = EaseType.Linear, bool loop = false, bool pingPong = false)
+        {
+            var anim = group.AddAnimation(name);
+            var track = anim.AddTrack(property);
+            track.Loop = loop;
+            track.Ease = ease;
+            track.AddFrame(0, start);
+            track.AddFrame(length, end);
+
+            if (pingPong)
+            {
+                track.AddFrame(length * 2, start);
+                track.Length = length * 2;
+            }
+            else track.Length = length;
+        }
+    }
 }
