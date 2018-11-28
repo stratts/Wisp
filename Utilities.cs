@@ -80,36 +80,41 @@ namespace Wisp
             return dirVector;
         }
 
-        public static int GetDirection(Vector2 dirVector)
+        public static Direction GetDirection(Vector2 dirVector)
         {
             var absX = Math.Abs(dirVector.X);
             var absY = Math.Abs(dirVector.Y);
 
             if (dirVector.X < 0 && -absY > dirVector.X)
             {
-                return (int)Direction.Left;
+                return Direction.Left;
             }
 
             if (dirVector.X > 0 && absY < dirVector.X)
             {
-                return (int)Direction.Right;
+                return Direction.Right;
             }
 
             if (dirVector.Y < 0 && -absX > dirVector.Y)
             {
-                return (int)Direction.Up;
+                return Direction.Up;
             }
 
             if (dirVector.Y > 0 && absX < dirVector.Y)
             {
-                return (int)Direction.Down;
+                return Direction.Down;
             }
 
-            return (int)Direction.Left;
+            return Direction.Left;
+        }
+
+        public static Direction GetDirection(Vector2 source, Vector2 target)
+        {
+            return GetDirection(GetDirectionVector(source, target));
         }
 
 
-        public static Node FindClosestNode(Node node, IReadOnlyCollection<Node> targets, float maxDist)
+        public static Node FindClosestNode(Node node, IEnumerable<Node> targets, float maxDist)
         {
             Node closest = null;
 
@@ -118,7 +123,7 @@ namespace Wisp
 
             foreach (Node target in targets)
             {
-                var distSquared = Vector2.DistanceSquared(node.Pos, target.Pos);
+                var distSquared = Vector2.DistanceSquared(node.GetCentrePos(), target.GetCentrePos());
 
                 if (distSquared < maxDistSquared)
                 {
