@@ -16,8 +16,8 @@ namespace Wisp.Handlers
 
             var entity = input;
             Point size;
-            if (current.Size == default(Point)) size = entity.Size;
-            else size = current.Size;
+            if (current.Size == Point.Zero) current.Size = entity.Size;
+            size = current.Size;
 
             current.collisionBox.UpdateBox(entity.ScenePos + current.Pos, new Vector2(size.X, size.Y));
             var collidableComponents = nodeManager.GetComponents<Collidable>();
@@ -102,7 +102,6 @@ namespace Wisp.Handlers
                 }
                 if (collision.direction == Direction.Down)
                 {
-                    //Console.WriteLine(move.velocity.Y);
                     if (targetMove != null)
                     {
                         targetMove.velocity.Y = move.velocity.Y;

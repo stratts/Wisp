@@ -47,7 +47,7 @@ namespace Wisp.Components
     {
         public CollisionBox collisionBox;
         public int Mask { get; set; } = -1;
-        public Point Size { get; set; }
+        public Point Size { get; set; } = Point.Zero;
         public Vector2 Pos { get; set; }
 
         public Collidable()
