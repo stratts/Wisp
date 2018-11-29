@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Wisp.Nodes;
+using Wisp.Components;
 
 namespace Wisp
 {
@@ -112,8 +113,10 @@ namespace Wisp
         {
             return GetDirection(GetDirectionVector(source, target));
         }
+    }
 
-
+    public static class NodeTools
+    {
         public static Node FindClosestNode(Node node, IEnumerable<Node> targets, float maxDist)
         {
             Node closest = null;
@@ -137,6 +140,14 @@ namespace Wisp
 
             return closest;
         }
+
+        public static IEnumerable<Node> FilterNodesByComponent<T>(IEnumerable<Node> nodes) where T : Component
+        {
+            foreach (var node in nodes)
+            {
+                if (node.HasComponent<T>()) yield return node;
+            }
+        }
     }
 
     public static class AnimTools
@@ -155,7 +166,13 @@ namespace Wisp
             float length, EaseType ease = EaseType.Linear, bool loop = false, bool pingPong = false)
         {
             var anim = group.AddAnimation(name);
-            var track = anim.AddTrack(property);
+            BasicTrack(anim, property, start, end, length, ease, loop, pingPong);
+        }
+
+        public static void BasicTrack(Animation animation, AnimationProperty property, float start, float end,
+            float length, EaseType ease = EaseType.Linear, bool loop = false, bool pingPong = false)
+        {
+            var track = animation.AddTrack(property);
             track.Loop = loop;
             track.Ease = ease;
             track.AddFrame(0, start);
