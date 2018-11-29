@@ -10,7 +10,7 @@ namespace Wisp
         float GetHeldTime(VirtualKeys key);
     }
 
-    public enum VirtualKeys { ZoomIn, ZoomOut, Close, MoveUp, MoveDown, MoveLeft, MoveRight, Delete, Escape, Confirm, Hub, Attack }
+    public enum VirtualKeys { ZoomIn, ZoomOut, Close, MoveUp, MoveDown, MoveLeft, MoveRight, Delete, Escape, Confirm, Hub, Attack, Swap }
 
     public class VirtualKeyManager : IKeyService
     {

@@ -113,6 +113,12 @@ namespace Wisp
             return node;
         }
 
+        public void RemoveChild(Node node)
+        {
+            children.Remove(node);
+            NodesChanged();
+        }
+
         public void SortChildren() => children.Sort(NodeSorter.Compare);
 
         public T GetFirstChildByType<T>() where T : Node
@@ -143,7 +149,8 @@ namespace Wisp
             else if (parent != null) parent.NodesChanged();
         }
 
-        public Vector2 CentrePos => new Vector2(Pos.X + (Size.X / 2), Pos.Y + (Size.Y / 2));    
+        public Vector2 Centre => Size.ToVector2() / 2;
+        public Vector2 CentrePos => Pos + Centre;    
     }
 
     public class NodeManager
