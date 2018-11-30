@@ -20,6 +20,9 @@ namespace Wisp.Handlers
             size = current.Size;
 
             current.collisionBox.UpdateBox(entity.ScenePos + current.Pos, new Vector2(size.X, size.Y));
+
+            if (IsStatic(input)) return;
+
             var collidableComponents = nodeManager.GetComponents<Collidable>();
 
             foreach (Collidable other in collidableComponents)
@@ -45,6 +48,12 @@ namespace Wisp.Handlers
                     }
                 }
             }
+        }
+
+        private bool IsStatic(Node node) 
+        {
+            if (node.parent != null) return IsStatic(node.parent);
+            return !node.HasComponent<Moveable>();
         }
     }
 

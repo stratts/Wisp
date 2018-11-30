@@ -31,18 +31,18 @@ namespace Wisp.Handlers
         {
             var e = (CollisionEvent)_e;
 
-            var portal = e.source.GetComponent<ScenePortal>();
+            var portal = e.target.GetComponent<ScenePortal>();
 
-            if (portal != null && e.target.HasComponent<TriggerPortal>())
+            if (portal != null && e.source.HasComponent<TriggerPortal>())
             {
                 var targetScene = scene.sceneManager.GetScene(portal.target);
-                scene.NodeManager.RemoveNode(e.target);
-                targetScene.NodeManager.AddNode(e.target);
+                scene.NodeManager.RemoveNode(e.source);
+                targetScene.NodeManager.AddNode(e.source);
 
-                if (e.target.HasComponent<IsPlayer>())
+                if (e.source.HasComponent<IsPlayer>())
                 {               
                     scene.sceneManager.ChangeScene(portal.type, portal.target, "Fade", portal.Unload);
-                    targetScene.camera.Target = e.target;
+                    targetScene.camera.Target = e.source;
                     scene.camera.Target = null;
                 }
             }
