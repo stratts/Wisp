@@ -30,7 +30,7 @@ namespace Wisp.Nodes
     {
         public TileMap(Vector2 pos, string mapPath, string tileset)
         {
-            this.Pos = pos;
+            Pos = pos;
 
             var map = new TiledSharp.TmxMap(mapPath);
             var texture = tileset;
@@ -41,13 +41,14 @@ namespace Wisp.Nodes
                 {
                     if (tile.Gid == 0) continue;
 
-                    var t = new TileSprite()
+                    var t = new TileSprite
                     {
                         Pos = new Vector2(tile.X * map.TileWidth,
                         tile.Y * map.TileHeight),
+                        MapPos = new Point(tile.X, tile.Y),
                         Size = new Point(map.TileWidth, map.TileHeight),
                         TexturePath = texture,
-                        id = tile.Gid
+                        Id = tile.Gid
                     };
 
                     AddChild(t);

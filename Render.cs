@@ -202,20 +202,15 @@ namespace Wisp
         { 
             var sprite = (TileSprite)node;
             var texture = GetTexture(sprite);
-            if (!sprite.SourceSet) sprite.SetSource();
 
-            var sourceRect = new Rectangle();
+            sprite.region = true;
 
-            sourceRect.X = sprite.source.X * sprite.Size.X;
-            sourceRect.Y = sprite.source.Y * sprite.Size.Y;
-            sourceRect.Width = sprite.Size.X;
-            sourceRect.Height = sprite.Size.Y;
+            var tilesX = texture.Width / sprite.Size.X;
 
-            spriteBatch.Draw(
-                    texture,
-                    pos,
-                    sourceRect, Color.White, 0f,
-                Vector2.Zero, 1f, SpriteEffects.None, 0f);    
+            sprite.SourceX = (sprite.Id - 1) % tilesX;
+            sprite.SourceY = (sprite.Id - 1) / tilesX;
+
+            Sprite(node, pos);
         }
 
         public void Text(Drawable node, Vector2 pos)

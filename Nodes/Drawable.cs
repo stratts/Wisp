@@ -157,24 +157,10 @@ namespace Wisp.Nodes
 
     public enum BackgroundType { Tile, Stretch }
 
-    public class TileSprite : Drawable
+    public class TileSprite : Sprite
     {
-        public int id;
-        public Point source;
-        public bool SourceSet { get; private set; } = false;
-
-        public void SetSource()
-        {
-            var tilesetWidth = Texture.Width / Size.X;
-            var tilesetHeight = Texture.Height / Size.Y;
-
-            source.Y = (id - 1) / tilesetWidth;
-            source.X = id - (tilesetWidth * source.Y) - 1;
-
-            SourceSet = true;
-        }
-
-        public override Point RenderSize { get { return Size; } }
+        public int Id { get; set; }
+        public Point MapPos { get; set; }
     }
 
     public class Rect : Drawable
