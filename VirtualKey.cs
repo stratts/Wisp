@@ -4,39 +4,57 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Wisp
 {
-    public interface IKeyService {
-        bool IsHeld(VirtualKeys key);
-        bool IsPressed(VirtualKeys key);
-        float GetHeldTime(VirtualKeys key);
+    public static class KeyManager 
+    {
+        static IKeyManager manager = null;
+
+        public static VirtualKeyManager<TEnum> Get<TEnum>()
+        {
+            if (manager == null) 
+                manager = new VirtualKeyManager<TEnum>();
+            return (VirtualKeyManager<TEnum>)manager;
+        }
+
+        public static void Update(KeyboardState kstate, float elapsedTime) 
+        {
+            if (manager == null) return;
+            manager.Update(kstate, elapsedTime);
+        }
     }
 
-    public enum VirtualKeys { ZoomIn, ZoomOut, Close, MoveUp, MoveDown, MoveLeft, MoveRight, Delete, Escape, Confirm, Hub, Attack, Swap }
-
-    public class VirtualKeyManager : IKeyService
+    interface IKeyManager 
     {
-        private Dictionary<VirtualKeys, VirtualKey> keys;
+        void Update(KeyboardState kstate, float elapsedTime);
+    }
+
+    public class VirtualKeyManager<TEnum> : IKeyManager
+    {
+        private Dictionary<TEnum, VirtualKey> keys;
 
         public VirtualKeyManager()
         {
-            keys = new Dictionary<VirtualKeys, VirtualKey>();
+            keys = new Dictionary<TEnum, VirtualKey>();
         }
 
-        public bool IsPressed(VirtualKeys key)
+        public bool IsPressed(TEnum key)
         {
-            return keys[key].Pressed;
+            keys.TryGetValue(key, out var vKey);
+            return vKey != null && vKey.Pressed;
         }
 
-        public bool IsHeld(VirtualKeys key)
+        public bool IsHeld(TEnum key)
         {
-            return keys[key].Held;
+            keys.TryGetValue(key, out var vKey);
+            return vKey != null && vKey.Held;
         }
 
-        public float GetHeldTime(VirtualKeys key)
+        public float GetHeldTime(TEnum key)
         {
-            return keys[key].HeldTime;
+            keys.TryGetValue(key, out var vKey);
+            return vKey == null ? 0 : vKey.HeldTime;
         }
 
-        public VirtualKey AddKey(VirtualKeys key, Keys[] trigger = null)
+        public VirtualKey AddKey(TEnum key, Keys[] trigger = null)
         {
             var vKey = new VirtualKey();
             vKey.AddTrigger(trigger);
@@ -45,7 +63,16 @@ namespace Wisp
             return vKey;
         }
 
-        public VirtualKey GetKey(VirtualKeys key)
+        public void AddKeys(IEnumerable<(TEnum key, Keys[] trigger)> keys) 
+        {
+            foreach (var key in keys) AddKey(key.key, key.trigger);
+        }
+
+        public void AddKeys(IEnumerable<(TEnum key, Keys trigger)> keys) {
+            foreach (var key in keys) AddKey(key.key, new[] { key.trigger });
+        }
+
+        public VirtualKey GetKey(TEnum key)
         {
             return keys[key];
         }

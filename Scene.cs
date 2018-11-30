@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Wisp
 {
@@ -28,7 +27,6 @@ namespace Wisp
         public readonly string name;
 
         public SceneManager sceneManager;
-        public IKeyService keyService { get; protected set; }
         public NodeManager NodeManager { get; private set; }
         public Process process;
         public Camera camera;
@@ -67,7 +65,6 @@ namespace Wisp
         public virtual void Load(Game game)
         {
             NodeManager.Update();
-            keyService = game.Services.GetService<IKeyService>();
             loaded = true;
             update = true;
         }
