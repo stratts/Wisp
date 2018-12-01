@@ -12,6 +12,7 @@ namespace Wisp
     {
         public Vector2 Pos;
         public Node Target { get; set; }
+        public Rectangle Bounds { get; set; } = Rectangle.Empty;
 
         public float zoom = 1;
 
@@ -66,6 +67,14 @@ namespace Wisp
                 Pos = targetPos.ToPoint().ToVector2();
                 Pos.X -= (width / zoom) / 2;
                 Pos.Y -= (height / zoom) / 2;
+
+                if (Bounds != Rectangle.Empty)
+                {
+                    if (Pos.X < Bounds.Left) Pos.X = Bounds.Left;
+                    if (Pos.Y < Bounds.Top) Pos.Y = Bounds.Top;
+                    if (Pos.X + Width > Bounds.Right) Pos.X = Bounds.Right - Width;
+                    if (Pos.Y + Height > Bounds.Bottom) Pos.Y = Bounds.Bottom - Height;
+                }
             }
 
             CollisionBox.UpdateBox(Pos, new Vector2(width / zoom, height / zoom));
