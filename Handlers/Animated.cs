@@ -45,6 +45,10 @@ namespace Wisp.Handlers
                     case AnimationProperty.StringIndex:
                         if (node is AnimatedText text) text.Index = (int)value;
                         break;
+                    case AnimationProperty.Collision:
+                        if ((int)value == 0) node.DisableComponent<Collidable>();
+                        else node.EnableComponent<Collidable>();
+                        break;
                 }
             }
         }

@@ -43,9 +43,9 @@ namespace Wisp
             AddHandler<Input>(new ScriptHandler());
             AddHandler<Script>(new ScriptHandler());          
             AddHandler<Moveable>(new MovementHandler());
+            AddHandler<Animated>(new AnimationHandler());
             AddHandler<Parallax>(new ParallaxHandler());
             AddHandler<Collidable>(new CollisionHandler());
-            AddHandler<Animated>(new AnimationHandler());
             AddHandler<Lifetime>(new LifetimeHandler());
             AddHandler<ConstantAnim>(new ConstantAnimHandler());
             
@@ -65,6 +65,7 @@ namespace Wisp
 
                     foreach (var component in components)
                     {
+                        if (!component.Enabled) continue;
                         var node = component.Parent;
                         handler.Process(node, component, scene);
                     }

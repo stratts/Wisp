@@ -92,6 +92,10 @@ namespace Wisp
             components.Remove(typeof(T));
         }
 
+        public void EnableComponent<T>() where T : Component => GetComponent<T>().Enabled = true;
+
+        public void DisableComponent<T>() where T : Component => GetComponent<T>().Enabled = false;
+
         public T GetComponent<T>() where T : Component
         {
             components.TryGetValue(typeof(T), out Component component);
@@ -260,7 +264,9 @@ namespace Wisp
 
         private void AddComponents(Node node)
         {
-            foreach (var item in node.Components) AddComponent(item.Key, item.Value);
+            foreach (var item in node.Components) {
+                AddComponent(item.Key, item.Value);
+            }
         }
 
         private void AddComponent(Type type, Component component)

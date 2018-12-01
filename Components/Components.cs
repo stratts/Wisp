@@ -7,7 +7,7 @@ namespace Wisp.Components
     public class Component
     {
         public Node Parent { get; set; }
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
     }
 
     public class Animated : Component
