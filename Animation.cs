@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Wisp.Components;
 
 namespace Wisp
 {
-    public enum AnimationProperty { PosX, PosY, Frame, Scale, Rotation, Opacity, StringIndex, Collision }
+    public enum AnimationProperty { PosX, PosY, Frame, Scale, Rotation, Opacity, StringIndex }
 
     public class AnimationGroup
     {
@@ -66,6 +65,13 @@ namespace Wisp
         public AnimationTrack AddTrack(AnimationProperty property)
         {
             var track = new AnimationTrack(property);
+            AddTrack(track);
+            return track;
+        }
+
+        public ComponentAnimationTrack AddComponentTrack<T>() where T : Component 
+        {
+            var track = new ComponentAnimationTrack(typeof(T));
             AddTrack(track);
             return track;
         }
@@ -173,6 +179,22 @@ namespace Wisp
             valuePos = Easings.Interpolate(valuePos, Ease);
 
             return a.Value + (b.Value - a.Value) * valuePos;
+        }
+    }
+
+    public class ComponentAnimationTrack : AnimationTrack
+    {
+        public Type Component { get; private set; }
+
+        public ComponentAnimationTrack(Type type) 
+        {
+            Component = type;
+        }
+
+        public void AddFrame(float time, bool enabled) 
+        {
+            float value = enabled ? 1 : 0;
+            AddFrame(time, value);
         }
     }
 

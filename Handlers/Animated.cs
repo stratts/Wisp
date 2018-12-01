@@ -22,6 +22,14 @@ namespace Wisp.Handlers
             foreach (var track in anim.Tracks)
             {
                 var value = track.CurrentValue;
+
+                if (track is ComponentAnimationTrack t)
+                {
+                    if ((int)value == 0)node.DisableComponent(t.Component);
+                    else node.EnableComponent(t.Component);
+                    continue;
+                }
+
                 switch (track.Property)
                 {
                     case AnimationProperty.Frame:
@@ -44,10 +52,6 @@ namespace Wisp.Handlers
                         break;
                     case AnimationProperty.StringIndex:
                         if (node is AnimatedText text) text.Index = (int)value;
-                        break;
-                    case AnimationProperty.Collision:
-                        if ((int)value == 0) node.DisableComponent<Collidable>();
-                        else node.EnableComponent<Collidable>();
                         break;
                 }
             }

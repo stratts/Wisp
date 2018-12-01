@@ -92,14 +92,20 @@ namespace Wisp
             components.Remove(typeof(T));
         }
 
-        public void EnableComponent<T>() where T : Component => GetComponent<T>().Enabled = true;
+        public void EnableComponent<T>() where T : Component => EnableComponent(typeof(T));
 
-        public void DisableComponent<T>() where T : Component => GetComponent<T>().Enabled = false;
+        public void EnableComponent(Type type) => GetComponent(type).Enabled = true;
 
-        public T GetComponent<T>() where T : Component
+        public void DisableComponent<T>() where T : Component => DisableComponent(typeof(T));
+
+        public void DisableComponent(Type type) => GetComponent(type).Enabled = false;
+
+        public T GetComponent<T>() where T : Component => (T)GetComponent(typeof(T));
+
+        public Component GetComponent(Type type) 
         {
-            components.TryGetValue(typeof(T), out Component component);
-            return (T)component;
+            components.TryGetValue(type, out Component component);
+            return component;
         }
 
         public bool HasComponent<T>() where T : Component
