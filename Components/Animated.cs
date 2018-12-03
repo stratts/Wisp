@@ -2,30 +2,50 @@
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
+
 using Wisp.Nodes;
-using Wisp.Components;
 
-namespace Wisp.Handlers
+namespace Wisp.Components
 {
-
-    public class AnimationHandler : IProcessHandler
+    public class Animated : Component
     {
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var anim = (Animated)component;
-            if (anim.Finished) return;
+        private AnimationGroup group;
+        public AnimationGroup Group { set => group = value; }
 
-            anim.Update(scene.elapsedTime);
+        public Animated() { }
+
+        public Animated(AnimationGroup group)
+        {
+            this.group = group;
+        }
+
+        public string CurrentAnimation
+        {
+            get => group.CurrentAnimation.Name;
+            set => group.SetAnimation(value);
+        }
+
+        public IEnumerable<AnimationTrack> Tracks => group.CurrentAnimation.Tracks;
+        public void Update(float elapsed) => group.CurrentAnimation.Update(elapsed);
+        public void Reset() => group.CurrentAnimation.Reset();
+        public bool Finished => group.CurrentAnimation.Finished;
+
+        public override void Update(Scene scene)
+        {
+            var node = Parent;
+            if (Finished) return;
+
+            Update(scene.elapsedTime);
 
             var drawable = node.GetFirstChildByType<Drawable>();
 
-            foreach (var track in anim.Tracks)
+            foreach (var track in Tracks)
             {
                 var value = track.CurrentValue;
 
                 if (track is ComponentAnimationTrack t)
                 {
-                    if ((int)value == 0)node.DisableComponent(t.Component);
+                    if ((int)value == 0) node.DisableComponent(t.Component);
                     else node.EnableComponent(t.Component);
                     continue;
                 }
@@ -55,6 +75,8 @@ namespace Wisp.Handlers
                         break;
                 }
             }
+
+            base.Update(scene);
         }
     }
 }

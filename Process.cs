@@ -25,7 +25,6 @@ namespace Wisp
     {
         Scene scene;
         
-        private Dictionary<Type, IProcessHandler> processHandlers;
         private List<Type> processHandlerList = new List<Type>();
         private Dictionary<Type, bool> processEnabled;
 
@@ -35,19 +34,18 @@ namespace Wisp
         {
             this.scene = scene;
 
-            processHandlers = new Dictionary<Type, IProcessHandler>();
             processEnabled = new Dictionary<Type, bool>();
             eventHandlers = new Dictionary<Type, List<IEventHandler>>();
 
-            AddHandler<AI>(new AIHandler());
-            AddHandler<Input>(new ScriptHandler());
-            AddHandler<Script>(new ScriptHandler());          
-            AddHandler<Moveable>(new MovementHandler());
-            AddHandler<Animated>(new AnimationHandler());
-            AddHandler<Parallax>(new ParallaxHandler());
-            AddHandler<Collidable>(new CollisionHandler());
-            AddHandler<Lifetime>(new LifetimeHandler());
-            AddHandler<ConstantAnim>(new ConstantAnimHandler());
+            AddHandler<AI>();
+            AddHandler<Input>();
+            AddHandler<Script>();          
+            AddHandler<Moveable>();
+            AddHandler<Animated>();
+            AddHandler<Parallax>();
+            AddHandler<Collidable>();
+            AddHandler<Lifetime>();
+            AddHandler<ConstantAnim>();
             
             AddEventHandler<CollisionEvent>(new ApplyCollision());
             AddEventHandler<CollisionEvent>(new PortalHandler());
@@ -61,13 +59,9 @@ namespace Wisp
 
                 if (components != null && processEnabled[type])
                 {
-                    var handler = processHandlers[type];
-
                     foreach (var component in components)
                     {
-                        if (!component.Enabled) continue;
-                        var node = component.Parent;
-                        handler.Process(node, component, scene);
+                        component.Update(scene);
                     }
                 }
             }
@@ -92,16 +86,15 @@ namespace Wisp
             }
         }   
         
-        public void AddHandler(Type type, IProcessHandler handler)
+        public void AddHandler(Type type)
         {
-            processHandlers.Add(type, handler);
             processHandlerList.Add(type);
             EnableProcessing(type);
         }
 
-        private void AddHandler<T>(IProcessHandler handler) where T : Component
+        private void AddHandler<T>() where T : Component
         {
-            AddHandler(typeof(T), handler);
+            AddHandler(typeof(T));
         }
 
         public void AddEventHandler(Type type, IEventHandler handler)

@@ -80,24 +80,4 @@ namespace Wisp.Handlers
             return particle;
         }
     }
-
-    public class LifetimeHandler : IProcessHandler
-    {
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var lifetime = (Lifetime)component;
-            lifetime.Time += scene.elapsedTime;
-            if (lifetime.Time > lifetime.MaxTime) scene.RemoveNode(node);
-        }
-    }
-
-    public class ConstantAnimHandler : IProcessHandler
-    {
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var anim = (ConstantAnim)component;
-            anim.Scale += anim.ScaleSpeed * scene.elapsedTime;
-            anim.Rotation += anim.RotationSpeed * scene.elapsedTime;
-        }
-    }
 }

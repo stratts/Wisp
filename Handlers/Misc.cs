@@ -7,24 +7,6 @@ using Wisp.Components;
 
 namespace Wisp.Handlers
 {
-    public class AIHandler : IProcessHandler
-    {
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var ai = (AI)component;
-            ai.Run(node, scene);
-        }
-    }
-
-    public class ScriptHandler : IProcessHandler
-    {
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var script = (Script)component;
-            script.logic.Run(node, scene);
-        }
-    }
-
     public class PortalHandler : IEventHandler
     {
         public void Process(Event _e, Scene scene)
@@ -48,19 +30,4 @@ namespace Wisp.Handlers
             }
         }
     }
-
-    public class ParallaxHandler : IProcessHandler
-    {
-        private Vector2 lastCameraPos;
-        private bool enabled = false;
-
-        public void Process(Node node, Component component, Scene scene)
-        {
-            var parallax = (Parallax)component;
-            if (enabled) node.Pos += (lastCameraPos - scene.camera.Pos) * parallax.Amount;
-            else enabled = true;
-            lastCameraPos = scene.camera.Pos;      
-        }
-    }
-
 }

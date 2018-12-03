@@ -14,10 +14,11 @@ namespace Wisp.Components
     {
         public IStateMachine stateMachine;
 
-        public void Run(Node node, Scene scene)
+        public override void Update(Scene scene)
         {
-            stateMachine.ChooseState(node, scene);
-            stateMachine.Run(node, scene);
+            stateMachine.ChooseState(Parent, scene);
+            stateMachine.Run(Parent, scene);
+            base.Update(scene);
         }
     }
 }

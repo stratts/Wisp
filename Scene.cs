@@ -152,7 +152,7 @@ namespace Wisp
         private Stack<Scene> toRemove;
         private Transition transition = null;
 
-        private Dictionary<Type, Type> customHandlers = new Dictionary<Type, Type>();
+        private List<Type> customHandlers = new List<Type>();
         private List<(Type, Type)> customEventHandlers = new List<(Type, Type)>();
 
         public SceneManager(Game game, GraphicsDeviceManager graphics)
@@ -183,7 +183,7 @@ namespace Wisp
             scene.SetViewport(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             foreach (var handler in customHandlers)
-                scene.process.AddHandler(handler.Key, (IProcessHandler)Activator.CreateInstance(handler.Value));
+                scene.process.AddHandler(handler);
             foreach (var handler in customEventHandlers)
                 scene.process.AddEventHandler(handler.Item1, (IEventHandler)Activator.CreateInstance(handler.Item2));
         }
@@ -194,9 +194,9 @@ namespace Wisp
             sceneTypes.Add(type.Name, type);
         }
 
-        public void AddHandler<T1, T2>() where T1 : Components.Component where T2 : IProcessHandler
+        public void AddHandler<T1>() where T1 : Component
         {
-            customHandlers.Add(typeof(T1), typeof(T2));
+            customHandlers.Add(typeof(T1));
         }
 
         public void AddEventHandler<T1, T2>() where T1 : Event where T2 : IEventHandler

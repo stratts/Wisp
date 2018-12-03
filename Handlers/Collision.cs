@@ -7,56 +7,6 @@ using Wisp.Components;
 
 namespace Wisp.Handlers
 {
-    public class CollisionHandler : IProcessHandler
-    {
-        public void Process(Node input, Component component, Scene scene)
-        {
-            var current = (Collidable)component;
-            var nodeManager = scene.NodeManager;
-
-            var entity = input;
-            Point size;
-            if (current.Size == Point.Zero) current.Size = entity.Size;
-            size = current.Size;
-
-            current.collisionBox.UpdateBox(entity.ScenePos + current.Pos, new Vector2(size.X, size.Y));
-
-            if (IsStatic(input)) return;
-
-            var collidableComponents = nodeManager.GetComponents<Collidable>();
-
-            foreach (Collidable other in collidableComponents)
-            {
-                if (current != other)
-                {
-                    if (current.Mask >= 0 && other.Mask >= 0 && current.Mask == other.Mask)
-                        continue;
-
-                    var box = current.collisionBox;
-                    var collision = box.CheckCollision(other.collisionBox);
-
-                    if (collision != null)
-                    {
-                        var collisionEvent = new CollisionEvent()
-                        {
-                            source = entity,
-                            target = other.Parent,
-                            collision = collision
-                        };
-
-                        scene.AddEvent(collisionEvent);
-                    }
-                }
-            }
-        }
-
-        private bool IsStatic(Node node) 
-        {
-            if (node.parent != null) return IsStatic(node.parent);
-            return !node.HasComponent<Moveable>();
-        }
-    }
-
     class ApplyCollision : IEventHandler
     {
         public void Process(Event e, Scene scene)
