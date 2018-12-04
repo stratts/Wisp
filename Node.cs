@@ -58,6 +58,8 @@ namespace Wisp
             get { return parent != null ? parent.SceneLayer : Layer; }
         }
 
+        public Node Root => parent != null ? parent.Root : this;
+
         public int DepthSortValue { get; private set; } = 0;
 
         public bool active
