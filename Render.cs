@@ -311,6 +311,7 @@ namespace Wisp
         public SpriteFont GetFont(Text node)
         {
             if (node.Font == null) node.Font = game.Content.Load<SpriteFont>(node.FontPath);
+            node.Font.DefaultCharacter = '?';
             return node.Font;
         }
     }
