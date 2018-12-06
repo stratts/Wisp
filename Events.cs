@@ -14,5 +14,6 @@ namespace Wisp
     public class CollisionEvent : Event
     {     
         public Collision collision;
+        public bool IsNew { get; set; }
     }
 }

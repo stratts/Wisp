@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 
@@ -10,6 +11,9 @@ namespace Wisp.Components
         public int Mask { get; set; } = -1;
         public Point Size { get; set; } = Point.Zero;
         public Vector2 Pos { get; set; }
+
+        private HashSet<Node> previousCollisions = new HashSet<Node>();
+        private HashSet<Node> currentCollisions = new HashSet<Node>();
 
         public Collidable()
         {
@@ -48,13 +52,19 @@ namespace Wisp.Components
                         {
                             source = entity,
                             target = other.Parent,
-                            collision = collision
+                            collision = collision,
+                            IsNew = !previousCollisions.Contains(other.Parent)
                         };
 
+                        currentCollisions.Add(other.Parent);
                         scene.AddEvent(collisionEvent);
                     }
                 }
             }
+
+            previousCollisions.Clear();
+            foreach (var collision in currentCollisions) previousCollisions.Add(collision);
+            currentCollisions.Clear();
 
             base.Update(scene);
         }
