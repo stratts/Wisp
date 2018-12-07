@@ -8,23 +8,6 @@ using Wisp.Components;
 
 namespace Wisp.Nodes
 {
-    public class Portal : Node
-    {
-        public Portal(Vector2 pos, Point size, string target)
-        {
-            this.Pos = pos;
-
-            Size = size;
-
-            AddComponent<Collidable>();
-
-            AddComponent(new ScenePortal()
-            {
-                target = target,
-                type = SceneType.World
-            });
-        }
-    }
 
     public class TileMap : Node
     {

@@ -3,11 +3,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="AI.cs"/>
+    <Content Include="AI.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7"/>
-    <PackageReference Include="TiledSharp" Version="0.15.0"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1"/>
+    <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
+    <PackageReference Include="TiledSharp" Version="0.15.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 </Project>

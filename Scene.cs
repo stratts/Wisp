@@ -368,8 +368,8 @@ namespace Wisp
                 if (!IsCurrentScene(transition.Target, transition.NextScene))
                 {
                     var current = CurrentScenes[transition.Target].name;
-                    if (transition.Unload) RemoveScene(current);
-                    else SetCurrentScene(SceneType.Background, current);
+                    /*if (transition.Unload) */RemoveScene(current);
+                    //else SetCurrentScene(SceneType.Background, current);
                     SetCurrentScene(transition.Target, transition.NextScene);   
                     GC.Collect();
                     GC.WaitForPendingFinalizers();

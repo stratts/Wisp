@@ -48,7 +48,6 @@ namespace Wisp
             AddHandler<ConstantAnim>();
             
             AddEventHandler<CollisionEvent>(new ApplyCollision());
-            AddEventHandler<CollisionEvent>(new PortalHandler());
         }
 
         public void ProcessComponents()
