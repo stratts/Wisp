@@ -13,19 +13,18 @@ namespace Wisp.Nodes
         public CollisionBox collisionBox = new CollisionBox();
         public bool Scissor { get; set; } = false;
         public string TexturePath { get; set; }
-        public Texture2D Texture { get; set; } = null;
         public float Opacity { get; set; } = 1;
         public float Rotation { get; set; }
         public float Scale { get; set; } = 1f;
 
         public virtual Point RenderSize
         {
-            get => new Point((int)(Size.X * Scale),(int)(Size.Y * Scale));
+            get => new Point((int)(Size.X * Scale), (int)(Size.Y * Scale));
         }
     }
 
     public class Sprite : Drawable
-    { 
+    {
         public bool FlipH { get; set; }
         public bool FlipV { get; set; }
 
@@ -114,13 +113,15 @@ namespace Wisp.Nodes
 
         public AnimatedText(Vector2 pos, string font, int speed) : base(pos, font)
         {
-            this.speed = speed;   
+            this.speed = speed;
         }
 
         public override string String
         {
-            get {
-                if (textChanged) {
+            get
+            {
+                if (textChanged)
+                {
                     UpdateString();
                     SetAnimation();
                     index = 0;
@@ -178,7 +179,7 @@ namespace Wisp.Nodes
 
     public class Particle : Drawable
     {
-        public Particle(Vector2 velocity, float scaleSpeed, float rotationSpeed, float lifetime) 
+        public Particle(Vector2 velocity, float scaleSpeed, float rotationSpeed, float lifetime)
         {
             var movement = AddComponent<Moveable>();
             movement.velocity = velocity;
@@ -193,8 +194,10 @@ namespace Wisp.Nodes
             life.MaxTime = lifetime;
         }
 
-        public override Point RenderSize {
-            get {
+        public override Point RenderSize
+        {
+            get
+            {
                 var anim = GetComponent<ConstantAnim>();
                 return new Point((int)(Size.X * anim.Scale), (int)(Size.Y * anim.Scale));
             }
@@ -228,7 +231,7 @@ namespace Wisp.Nodes
         public ParticleAttrib Rotation { get; set; }
         public ParticleAttrib Scale { get; set; }
 
-        public ParticleEmitter() 
+        public ParticleEmitter()
         {
             var script = AddComponent<Script>();
             script.logic = new ParticleEmitterHandler();

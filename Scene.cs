@@ -8,17 +8,17 @@ namespace Wisp
 {
     public enum SceneType { Background, World, HUD };
 
-    interface ISceneLogic 
+    interface ISceneLogic
     {
         void Load(Scene scene);
-        void Update(Scene scene); 
+        void Update(Scene scene);
     }
 
     public class Scene<TEnum> : Scene
     {
-        public void AddNode(Node node, TEnum layer) => 
+        public void AddNode(Node node, TEnum layer) =>
             AddNode(node, Convert.ToInt32(layer));
-        public void AddNode(Node node, Vector2 pos, TEnum layer) => 
+        public void AddNode(Node node, Vector2 pos, TEnum layer) =>
             AddNode(node, pos, Convert.ToInt32(layer));
     }
 
@@ -43,7 +43,7 @@ namespace Wisp
 
         private List<Event> newEvents = new List<Event>();
         private Dictionary<Type, List<Event>> events = new Dictionary<Type, List<Event>>();
-        
+
         public IReadOnlyDictionary<Type, List<Event>> Events { get { return events; } }
 
         public Scene()
@@ -178,7 +178,8 @@ namespace Wisp
             return scene;
         }
 
-        private void SetupScene(Scene scene) {
+        private void SetupScene(Scene scene)
+        {
             scene.sceneManager = this;
             scene.SetViewport(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
@@ -188,7 +189,7 @@ namespace Wisp
                 scene.process.AddEventHandler(handler.Item1, handler.Item2);
         }
 
-        public void AddScene<T>() where T : Scene 
+        public void AddScene<T>() where T : Scene
         {
             var type = typeof(T);
             sceneTypes.Add(type.Name, type);
@@ -228,7 +229,8 @@ namespace Wisp
             activeScenes.Remove(name);
         }
 
-        public void AddUI(Scene scene) {
+        public void AddUI(Scene scene)
+        {
             SetupScene(scene);
             scene.Load(game);
             UIScenes.Add(scene);
@@ -312,7 +314,7 @@ namespace Wisp
             {
                 CurrentScenes.TryGetValue(scene.Key, out Scene current);
                 var next = scene.Value;
-                
+
                 if (current == null || current != next)
                 {
                     CurrentScenes[scene.Key] = next;
@@ -335,10 +337,10 @@ namespace Wisp
                 {
                     activeScenes.Remove(scene.name);
                     scene.Unload();
-                    NextScenes.Remove(type);            
+                    NextScenes.Remove(type);
                 }
             }
-        } 
+        }
 
         public void ClearUI()
         {
@@ -350,7 +352,7 @@ namespace Wisp
             foreach (var scene in scenes)
             {
                 if (scene != null && scene.update)
-                {    
+                {
                     scene.Update(gameTime);
                 }
             }
@@ -370,12 +372,13 @@ namespace Wisp
                 if (!IsCurrentScene(transition.Target, transition.NextScene))
                 {
                     var current = CurrentScenes[transition.Target].name;
-                    /*if (transition.Unload) */RemoveScene(current);
+                    /*if (transition.Unload) */
+                    RemoveScene(current);
                     //else SetCurrentScene(SceneType.Background, current);
-                    SetCurrentScene(transition.Target, transition.NextScene);   
+                    SetCurrentScene(transition.Target, transition.NextScene);
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-                }       
+                }
 
                 transitionScene.TransitionIn();
             }
@@ -410,7 +413,7 @@ namespace Wisp
         private void RenderScene(Scene scene, SpriteBatch spriteBatch)
         {
             scene.camera.Update();
-            Renderer.Render(scene, spriteBatch);
+            Renderer.Render(scene.NodeManager.Nodes, scene.camera, spriteBatch);
         }
 
         public void SetRenderOrder(IEnumerable<SceneType> order)

@@ -12,7 +12,6 @@ namespace Wisp
 {
     public class SceneRender
     {
-        private Scene scene;
         private Camera camera;
         private SpriteBatch spriteBatch;
         private GraphicsDevice graphics;
@@ -26,6 +25,8 @@ namespace Wisp
         private delegate void RenderHandler(Drawable node, Vector2 pos);
         private Dictionary<Type, RenderHandler> renderHandlers;
         private Dictionary<Type, bool> renderEnabled;
+
+        private Dictionary<Node, Texture2D> textures = new Dictionary<Node, Texture2D>();
 
         public SceneRender(Game game)
         {
@@ -65,10 +66,9 @@ namespace Wisp
             return renderEnabled[typeof(T)];
         }
 
-        public void Render(Scene scene, SpriteBatch spriteBatch)
+        public void Render(List<Node> nodes, Camera camera, SpriteBatch spriteBatch)
         {
-            this.scene = scene;
-            this.camera = scene.camera;
+            this.camera = camera;
             this.spriteBatch = spriteBatch;
             graphics = spriteBatch.GraphicsDevice;
             samplerState = SamplerState.PointClamp;
@@ -80,7 +80,7 @@ namespace Wisp
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, samplerState, null, null, null, matrix);
 
-            RenderNodes(scene.NodeManager.Nodes);
+            RenderNodes(nodes);
 
             spriteBatch.End();
         }
@@ -183,7 +183,7 @@ namespace Wisp
             origin, scale, effects, 0);
         }
 
-        public void AnimatedSprite(Drawable node, Vector2 pos) 
+        public void AnimatedSprite(Drawable node, Vector2 pos)
         {
             var sprite = (AnimatedSprite)node;
             Texture2D texture = GetTexture(sprite);
@@ -199,7 +199,7 @@ namespace Wisp
         }
 
         public void TileSprite(Drawable node, Vector2 pos)
-        { 
+        {
             var sprite = (TileSprite)node;
             var texture = GetTexture(sprite);
 
@@ -222,14 +222,14 @@ namespace Wisp
             {
                 var shadowPos = new Vector2(pos.X, pos.Y + text.ShadowDist);
 
-                spriteBatch.DrawString( 
-                    font, text.String, shadowPos, text.ShadowColor, 
+                spriteBatch.DrawString(
+                    font, text.String, shadowPos, text.ShadowColor,
                     0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
             }
 
             spriteBatch.DrawString(
-                font, text.String, pos, text.Color, 
-                0f, Vector2.Zero, 1f, SpriteEffects.None, 1);    
+                font, text.String, pos, text.Color,
+                0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
         }
 
         public void Background(Drawable node, Vector2 pos)
@@ -260,7 +260,8 @@ namespace Wisp
         {
             var rect = (Rect)node;
 
-            if (rect.Texture == null)
+            textures.TryGetValue(node, out var texture);
+            if (texture == null)
             {
                 var size = rect.Size;
                 var fill = new Color[size.X * size.Y];
@@ -270,11 +271,12 @@ namespace Wisp
                     fill[i] = rect.Color;
                 }
 
-                rect.Texture = new Texture2D(game.GraphicsDevice, size.X, size.Y);
-                rect.Texture.SetData(fill);
+                texture = new Texture2D(game.GraphicsDevice, size.X, size.Y);
+                texture.SetData(fill);
+                textures[node] = texture;
             }
 
-            spriteBatch.Draw(rect.Texture, pos, Color.White * rect.Opacity);
+            spriteBatch.Draw(texture, pos, Color.White * rect.Opacity);
         }
 
         public void Particle(Drawable node, Vector2 pos)
@@ -295,17 +297,20 @@ namespace Wisp
                 anim.Scale,
                 SpriteEffects.None,
                 0
-            );    
+            );
         }
 
         public Texture2D GetTexture(Drawable node)
         {
-            if (node.Texture == null)
+            textures.TryGetValue(node, out var texture);
+
+            if (texture == null)
             {
-                node.Texture = game.Content.Load<Texture2D>(node.TexturePath);
+                texture = game.Content.Load<Texture2D>(node.TexturePath);
+                textures[node] = texture;
             }
 
-            return node.Texture;
+            return texture;
         }
 
         public SpriteFont GetFont(Text node)
