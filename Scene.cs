@@ -153,7 +153,7 @@ namespace Wisp
         private Transition transition = null;
 
         private List<Type> customHandlers = new List<Type>();
-        private List<(Type, Type)> customEventHandlers = new List<(Type, Type)>();
+        private List<(Type, HandleEvent)> customEventHandlers = new List<(Type, HandleEvent)>();
 
         public SceneManager(Game game, GraphicsDeviceManager graphics)
         {
@@ -185,7 +185,7 @@ namespace Wisp
             foreach (var handler in customHandlers)
                 scene.process.AddHandler(handler);
             foreach (var handler in customEventHandlers)
-                scene.process.AddEventHandler(handler.Item1, (IEventHandler)Activator.CreateInstance(handler.Item2));
+                scene.process.AddEventHandler(handler.Item1, handler.Item2);
         }
 
         public void AddScene<T>() where T : Scene 
@@ -199,9 +199,11 @@ namespace Wisp
             customHandlers.Add(typeof(T1));
         }
 
-        public void AddEventHandler<T1, T2>() where T1 : Event where T2 : IEventHandler
+        public HandleEvent AddEventHandler<T>(IEventHandler<T> handler) where T : Event
         {
-            customEventHandlers.Add((typeof(T1), typeof(T2)));
+            HandleEvent handle = (e, scene) => { handler.Process((T)e, scene); };
+            customEventHandlers.Add((typeof(T), handle));
+            return handle;
         }
 
         private void AddScene(string name)

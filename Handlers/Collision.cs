@@ -7,11 +7,11 @@ using Wisp.Components;
 
 namespace Wisp.Handlers
 {
-    class ApplyCollision : IEventHandler
+    class ApplyCollision : IEventHandler<CollisionEvent>
     {
-        public void Process(Event e, Scene scene)
+        public void Process(CollisionEvent e, Scene scene)
         {
-            var collisionEvent = (CollisionEvent)e;
+            var collisionEvent = e;
             
             var entity = collisionEvent.source;
             var target = collisionEvent.target;

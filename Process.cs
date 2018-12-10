@@ -21,6 +21,13 @@ namespace Wisp
         void Process(Event e, Scene scene); 
     }
 
+    public interface IEventHandler<T> where T : Event
+    {
+        void Process(T e, Scene scene);
+    }
+
+    public delegate void HandleEvent(Event e, Scene scene);
+
     public class Process
     {
         Scene scene;
@@ -28,14 +35,14 @@ namespace Wisp
         private List<Type> processHandlerList = new List<Type>();
         private Dictionary<Type, bool> processEnabled;
 
-        private Dictionary<Type, List<IEventHandler>> eventHandlers;
+        private Dictionary<Type, List<HandleEvent>> eventHandlers;
 
         public Process(Scene scene)
         {
             this.scene = scene;
 
             processEnabled = new Dictionary<Type, bool>();
-            eventHandlers = new Dictionary<Type, List<IEventHandler>>();
+            eventHandlers = new Dictionary<Type, List<HandleEvent>>();
 
             AddHandler<AI>();
             AddHandler<Input>();
@@ -46,8 +53,8 @@ namespace Wisp
             AddHandler<Collidable>();
             AddHandler<Lifetime>();
             AddHandler<ConstantAnim>();
-            
-            AddEventHandler<CollisionEvent>(new ApplyCollision());
+
+            AddEventHandler(new ApplyCollision());
         }
 
         public void ProcessComponents()
@@ -70,7 +77,7 @@ namespace Wisp
         {
             foreach (var type in scene.Events.Keys)
             {
-                eventHandlers.TryGetValue(type, out List<IEventHandler> handlers);
+                eventHandlers.TryGetValue(type, out List<HandleEvent> handlers);
 
                 if (handlers != null)
                 {
@@ -78,7 +85,7 @@ namespace Wisp
                     { 
                         foreach (Event e in scene.Events[type])
                         {
-                            handler.Process(e, scene);
+                            handler(e, scene);
                         }
                     }
                 }
@@ -96,16 +103,20 @@ namespace Wisp
             AddHandler(typeof(T));
         }
 
-        public void AddEventHandler(Type type, IEventHandler handler)
+        public void AddEventHandler(Type type, HandleEvent handler)
         {
-            eventHandlers.TryGetValue(type, out List<IEventHandler> list);
-            if (list == null) eventHandlers[type] = new List<IEventHandler>();
+            eventHandlers.TryGetValue(type, out List<HandleEvent> list);
+            if (list == null) eventHandlers[type] = new List<HandleEvent>();
             eventHandlers[type].Add(handler);
         }
 
-        private void AddEventHandler<T>(IEventHandler handler) where T : Event
+        public void AddEventHandler<T>(IEventHandler<T> handler) where T : Event
         {
-            AddEventHandler(typeof(T), handler);
+            var type = typeof(T);
+            eventHandlers.TryGetValue(type, out List<HandleEvent> list);
+            if (list == null) eventHandlers[type] = new List<HandleEvent>();
+            HandleEvent handle = (e, scene) => { handler.Process((T)e, scene); };
+            eventHandlers[type].Add(handle);
         }
 
         public void EnableProcessing(Type type) => processEnabled[type] = true;
