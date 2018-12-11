@@ -12,7 +12,7 @@ namespace Wisp.Scenes
         Node rect;
         Animated anim;
 
-        public override void Load(Game game)
+        public override void Load()
         {
             rect = new Node();
             rect.AddChild(new Rect(new Point(viewport.X, viewport.Y), Color.Black));
@@ -39,7 +39,7 @@ namespace Wisp.Scenes
             this.anim.CurrentAnimation = "fadeOut";
 
             AddNode(rect);
-            base.Load(game);
+            base.Load();
         }
 
         public override void TransitionOut()

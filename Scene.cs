@@ -62,7 +62,7 @@ namespace Wisp
             camera = new Camera(viewport);
         }
 
-        public virtual void Load(Game game)
+        public virtual void Load()
         {
             NodeManager.Update();
             loaded = true;
@@ -232,7 +232,7 @@ namespace Wisp
         public void AddUI(Scene scene)
         {
             SetupScene(scene);
-            scene.Load(game);
+            scene.Load();
             UIScenes.Add(scene);
             CurrentScenes[SceneType.World].process.DisableProcessing<Components.Input>();
         }
@@ -240,7 +240,7 @@ namespace Wisp
         public Scene AddUI(string name)
         {
             var scene = CreateScene(name);
-            scene.Load(game);
+            scene.Load();
             UIScenes.Add(scene);
             CurrentScenes[SceneType.World].process.DisableProcessing<Components.Input>();
             return scene;
@@ -286,7 +286,7 @@ namespace Wisp
             var scene = GetScene(name);
             scene.update = true;
             NextScenes[type] = scene;
-            if (!scene.loaded) scene.Load(game);
+            if (!scene.loaded) scene.Load();
         }
 
         public void ChangeScene(SceneType type, string name, string transition, bool unload)
@@ -301,7 +301,7 @@ namespace Wisp
 
             CurrentScenes[type].update = false;
 
-            this.transition.TransitionScene.Load(game);
+            this.transition.TransitionScene.Load();
             activeScenes.TryGetValue(name, out var scene);
             if (scene != null) scene.update = false;
         }

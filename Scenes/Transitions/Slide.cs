@@ -12,7 +12,7 @@ namespace Wisp.Scenes
         Node rect;
         Animated anim;
 
-        public override void Load(Game game)
+        public override void Load()
         {
             rect = new Node();
             rect.Pos = new Vector2(0, 0);
@@ -38,7 +38,7 @@ namespace Wisp.Scenes
             this.anim.CurrentAnimation = "slideOut";
 
             AddNode(rect);
-            base.Load(game);
+            base.Load();
         }
 
         public override void TransitionOut()
