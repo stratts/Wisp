@@ -40,13 +40,41 @@ namespace Wisp.Nodes
 
     public class Text : Drawable
     {
-        private bool wrap = false;
-        private string contents = "";
-        protected string _string = "";
-        private Point renderSize;
-        protected int index = 0;
-        protected bool textChanged = false;
+        private string contents;
+        public string Contents
+        {
+            get { return contents; }
+            set
+            {
+                contents = value;
+                Index = MaxIndex;
+                UpdateString = true;
+            }
+        }
 
+        private bool wrap;
+        public bool Wrap
+        {
+            get { return wrap; }
+            set
+            {
+                wrap = value;
+                UpdateString = true;
+            }
+        }
+
+        private float index;
+        public float Index
+        {
+            get { return index; }
+            set
+            {
+                if (value != index) UpdateString = true;
+                index = value;
+            }
+        }
+
+        public int MaxIndex => Contents.Length - 1;
         public string FontPath { get; set; }
         public SpriteFont Font { get; set; } = null;
         public Color Color { get; set; } = Color.Black;
@@ -54,97 +82,26 @@ namespace Wisp.Nodes
         public Color ShadowColor { get; set; } = Color.TransparentBlack;
         public int ShadowDist { get; set; } = 1;
 
+        public bool UpdateString { get; private set; }
+
+        private string renderString;
+        public string RenderString
+        {
+            get { return renderString; }
+            set
+            {
+                renderString = value;
+                UpdateString = false;
+            }
+        }
+
         public Text(Vector2 pos, string font)
         {
             Pos = pos;
             FontPath = font;
         }
 
-        public bool Wrap
-        {
-            get { return wrap; }
-            set
-            {
-                textChanged = true;
-                wrap = value;
-            }
-        }
-
-        public string Contents
-        {
-            get { return contents; }
-            set
-            {
-                textChanged = true;
-                contents = value;
-            }
-        }
-
-        public virtual string String
-        {
-            get
-            {
-                if (textChanged) UpdateString();
-                if (index == _string.Length) return _string;
-                return _string.Substring(0, index);
-            }
-        }
-
-        protected void UpdateString()
-        {
-            if (Font == null) return;
-            if (Wrap) _string = TextTools.WrapText(Contents, Font, Size.X);
-            else _string = Contents;
-            index = _string.Length;
-
-            var size = Font.MeasureString(_string);
-            renderSize = new Point((int)size.X, (int)size.Y);
-            textChanged = false;
-        }
-
-        public override Point RenderSize { get { return renderSize; } }
-    }
-
-    public class AnimatedText : Text
-    {
-        public int Index { get => index; set => index = value; }
-        public int MaxIndex => _string.Length;
-        private int speed;
-
-        public AnimatedText(Vector2 pos, string font, int speed) : base(pos, font)
-        {
-            this.speed = speed;
-        }
-
-        public override string String
-        {
-            get
-            {
-                if (textChanged)
-                {
-                    UpdateString();
-                    SetAnimation();
-                    index = 0;
-                }
-                return base.String;
-            }
-        }
-
-        public void SetAnimation()
-        {
-            if (HasComponent<Animated>()) RemoveComponent<Animated>();
-
-            var group = new AnimationGroup();
-            var anim = group.AddAnimation("draw");
-            var index = anim.AddTrack(AnimationProperty.StringIndex);
-            index.Loop = false;
-            index.Length = (float)_string.Length / speed;
-            index.Ease = EaseType.Linear;
-            index.AddFrame(0, 0);
-            index.AddFrame(index.Length, _string.Length);
-
-            AddComponent(new Animated(group));
-        }
+        public override Point RenderSize => Size;
     }
 
     public class Background : Drawable

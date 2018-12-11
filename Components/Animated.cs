@@ -71,7 +71,7 @@ namespace Wisp.Components
                         node.Pos = new Vector2(node.Pos.X, value);
                         break;
                     case AnimationProperty.StringIndex:
-                        if (node is AnimatedText text) text.Index = (int)value;
+                        if (node is Text text) text.Index = value;
                         break;
                 }
             }

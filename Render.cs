@@ -36,7 +36,7 @@ namespace Wisp
             renderEnabled = new Dictionary<Type, bool>();
 
             AddHandler<Text>(Text);
-            AddHandler<AnimatedText>(Text);
+            //AddHandler<AnimatedText>(Text);
             AddHandler<Sprite>(Sprite);
             AddHandler<AnimatedSprite>(AnimatedSprite);
             AddHandler<Background>(Background);
@@ -218,17 +218,29 @@ namespace Wisp
             var text = (Text)node;
             var font = GetFont(text);
 
+            if (text.UpdateString)
+            {
+                if (text.Wrap) text.RenderString = TextTools.WrapText(text.Contents, font, text.Size.X);
+                else text.RenderString = text.Contents;
+                if (text.Index < text.MaxIndex)
+                {
+                    float indexPos = (float)text.Index / (float)text.MaxIndex;
+                    int newLen = (int)(text.RenderString.Length * indexPos);
+                    text.RenderString = text.RenderString.Substring(0, newLen);
+                }
+            }
+
             if (text.Shadow)
             {
                 var shadowPos = new Vector2(pos.X, pos.Y + text.ShadowDist);
 
                 spriteBatch.DrawString(
-                    font, text.String, shadowPos, text.ShadowColor,
+                    font, text.RenderString, shadowPos, text.ShadowColor,
                     0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
             }
 
             spriteBatch.DrawString(
-                font, text.String, pos, text.Color,
+                font, text.RenderString, pos, text.Color,
                 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
         }
 
