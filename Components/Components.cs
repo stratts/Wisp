@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 
 namespace Wisp.Components
 {
+    public delegate void ComponentAction(Node node, Scene scene);
+
     public class Solid : Component { }
 
     public class IsPlayer : Component { }
