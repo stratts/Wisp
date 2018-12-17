@@ -40,12 +40,15 @@ namespace Wisp.Components
 
             Parent.Pos += (move.velocity + move.bonusVelocity) * elapsed;
 
-            float friction = (1f +
-                ((scene.friction * move.frictionMultiplier) * elapsed));
+            var friction = new Vector2(scene.friction * move.frictionMultiplier * elapsed);
+            if (friction.X > Math.Abs(move.velocity.X)) friction.X = Math.Abs(move.velocity.X);
+            if (friction.Y > Math.Abs(move.velocity.Y)) friction.Y = Math.Abs(move.velocity.Y);
 
             // Apply friction
-            move.velocity = move.velocity / friction;
-            move.bonusVelocity = move.bonusVelocity / friction;
+            if (move.velocity.X > 0) move.velocity.X -= friction.X;
+            else if (move.velocity.X < 0) move.velocity.X += friction.X;
+            if (move.velocity.Y > 0) move.velocity.Y -= friction.Y;
+            else if (move.velocity.Y < 0) move.velocity.Y += friction.Y;
 
             if (Math.Abs(move.velocity.X) < 2) move.velocity.X = 0;
             if (Math.Abs(move.velocity.Y) < 2) move.velocity.Y = 0;
