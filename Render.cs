@@ -26,7 +26,7 @@ namespace Wisp
         private Dictionary<Type, RenderHandler> renderHandlers;
         private Dictionary<Type, bool> renderEnabled;
 
-        private Dictionary<Node, Texture2D> textures = new Dictionary<Node, Texture2D>();
+        private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
         public SceneRender(Game game)
         {
@@ -271,8 +271,10 @@ namespace Wisp
         public void Rect(Drawable node, Vector2 pos)
         {
             var rect = (Rect)node;
+            if (rect.TexturePath == null) rect.TexturePath = rect.Size.ToString() + rect.Color.ToString();
+            var textureString = rect.TexturePath;
 
-            textures.TryGetValue(node, out var texture);
+            textures.TryGetValue(textureString, out var texture);
             if (texture == null)
             {
                 var size = rect.Size;
@@ -285,7 +287,7 @@ namespace Wisp
 
                 texture = new Texture2D(game.GraphicsDevice, size.X, size.Y);
                 texture.SetData(fill);
-                textures[node] = texture;
+                textures[textureString] = texture;
             }
 
             spriteBatch.Draw(texture, pos, Color.White * rect.Opacity);
@@ -314,12 +316,12 @@ namespace Wisp
 
         public Texture2D GetTexture(Drawable node)
         {
-            textures.TryGetValue(node, out var texture);
+            textures.TryGetValue(node.TexturePath, out var texture);
 
             if (texture == null)
             {
                 texture = game.Content.Load<Texture2D>(node.TexturePath);
-                textures[node] = texture;
+                textures[node.TexturePath] = texture;
             }
 
             return texture;

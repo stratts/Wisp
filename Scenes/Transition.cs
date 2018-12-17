@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wisp.Scenes
 {
-    class Transition : Scene
+    public abstract class Transition : Scene
     {
         public bool FinishedIn { get; protected set; }
         public bool FinishedOut { get; protected set; }

@@ -24,7 +24,7 @@ namespace Wisp
             this.graphics = graphics;
 
             renderer = new SceneRender(game);
-            sceneManager = new SceneManager(game, graphics);
+            sceneManager = new SceneManager(graphics);
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
         }
 
@@ -37,12 +37,15 @@ namespace Wisp
         public void Render()
         {
             graphics.GraphicsDevice.Clear(ClearColor);
-            sceneManager.RenderCurrentScenes(spriteBatch);
+
+            foreach (var scene in sceneManager.Scenes)
+            {
+                scene.camera.Update();
+                renderer.Render(scene.NodeManager.Nodes, scene.camera, spriteBatch);
+            }
         }
 
-        public void AddScene<T>() where T : Scene => sceneManager.AddScene<T>();
-
-        public void SetCurrentScene(SceneType type, string scene) => sceneManager.SetCurrentScene(type, scene);
+        public void SetCurrentScene(SceneType type, Scene scene) => sceneManager.SetCurrentScene(type, scene);
 
         public void AddHandler<T>() where T : Component => sceneManager.AddHandler<T>();
 

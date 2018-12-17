@@ -7,7 +7,7 @@ using Wisp.Components;
 
 namespace Wisp.Scenes
 {
-    class Slide : Transition
+    public class Slide : Transition
     {
         Node rect;
         Animated anim;
