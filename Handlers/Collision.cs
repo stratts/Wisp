@@ -16,7 +16,7 @@ namespace Wisp.Handlers
             var entity = collisionEvent.source;
             var target = collisionEvent.target;
 
-            if (entity.HasComponent<Moveable>() && target.HasComponent<Solid>())
+            if (entity.HasComponent<Moveable>() && entity.HasComponent<Solid>() && target.HasComponent<Solid>())
             {
                 var move = entity.GetComponent<Moveable>();
                 var size = entity.Size;
