@@ -73,6 +73,11 @@ namespace Wisp
 
     public class PosTools
     {
+        public static bool WithinRange(Vector2 pos1, Vector2 pos2, float range)
+        {
+            return Vector2.DistanceSquared(pos1, pos2) < Math.Pow(range, 2);
+        }
+
         public static Vector2 GetDirectionVector(Vector2 source, Vector2 target)
         {
             Vector2 dirVector = (target - source);
