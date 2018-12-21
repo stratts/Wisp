@@ -43,7 +43,7 @@ namespace Wisp
             scene.SetViewport(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             foreach (var handler in customHandlers)
-                scene.process.AddHandler(handler);
+                scene.process.AddComponent(handler);
             foreach (var handler in customEventHandlers)
                 scene.process.AddEventHandler(handler.Item1, handler.Item2);
         }

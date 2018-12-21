@@ -18,7 +18,7 @@ namespace Wisp
 
     public interface IEventHandler
     {
-        void Process(Event e, Scene scene); 
+        void Process(Event e, Scene scene);
     }
 
     public interface IEventHandler<T> where T : Event
@@ -31,8 +31,9 @@ namespace Wisp
     public class Process
     {
         Scene scene;
-        
-        private List<Type> processHandlerList = new List<Type>();
+
+        private HashSet<Type> orderedComponents = new HashSet<Type>();
+        private List<Type> componentOrder = new List<Type>();
         private Dictionary<Type, bool> processEnabled;
 
         private Dictionary<Type, List<HandleEvent>> eventHandlers;
@@ -44,31 +45,47 @@ namespace Wisp
             processEnabled = new Dictionary<Type, bool>();
             eventHandlers = new Dictionary<Type, List<HandleEvent>>();
 
-            AddHandler<AI>();
-            AddHandler<Input>();
-            AddHandler<Script>();          
-            AddHandler<Moveable>();
-            AddHandler<Animated>();
-            AddHandler<Parallax>();
-            AddHandler<Collidable>();
-            AddHandler<Lifetime>();
-            AddHandler<ConstantAnim>();
+            AddComponent<AI>();
+            AddComponent<Input>();
+            AddComponent<Script>();
+            AddComponent<Moveable>();
+            AddComponent<Animated>();
+            AddComponent<Parallax>();
+            AddComponent<Collidable>();
+            AddComponent<Lifetime>();
+            AddComponent<ConstantAnim>();
 
             AddEventHandler(new ApplyCollision());
         }
 
         public void ProcessComponents()
         {
-            foreach (var type in processHandlerList)
+            foreach (var type in componentOrder)
             {
-                var components = scene.NodeManager.GetComponents(type);
+                ProcessComponentType(scene, type);
+            }
 
-                if (components != null && processEnabled[type])
+            foreach (var type in scene.NodeManager.ComponentTypes)
+            {
+                if (!orderedComponents.Contains(type))
                 {
-                    foreach (var component in components)
-                    {
-                        component.Update(scene);
-                    }
+                    ProcessComponentType(scene, type);
+                }
+            }
+        }
+
+        private void ProcessComponentType(Scene scene, Type type)
+        {
+            var components = scene.NodeManager.GetComponents(type);
+
+            if (!processEnabled.ContainsKey(type)) processEnabled[type] = true;
+            processEnabled.TryGetValue(type, out var enabled);
+
+            if (components != null && enabled)
+            {
+                foreach (var component in components)
+                {
+                    component.Update(scene);
                 }
             }
         }
@@ -82,7 +99,7 @@ namespace Wisp
                 if (handlers != null)
                 {
                     foreach (var handler in handlers)
-                    { 
+                    {
                         foreach (Event e in scene.Events[type])
                         {
                             handler(e, scene);
@@ -90,17 +107,18 @@ namespace Wisp
                     }
                 }
             }
-        }   
-        
-        public void AddHandler(Type type)
+        }
+
+        public void AddComponent(Type type)
         {
-            processHandlerList.Add(type);
+            orderedComponents.Add(type);
+            componentOrder.Add(type);
             EnableProcessing(type);
         }
 
-        private void AddHandler<T>() where T : Component
+        private void AddComponent<T>() where T : Component
         {
-            AddHandler(typeof(T));
+            AddComponent(typeof(T));
         }
 
         public void AddEventHandler(Type type, HandleEvent handler)
@@ -126,7 +144,7 @@ namespace Wisp
         public void DisableProcessing(Type type) => processEnabled[type] = false;
 
         public void DisableProcessing<T>() where T : Component => DisableProcessing(typeof(T));
- 
+
         public bool ProcessingEnabled<T>() where T : Component
         {
             return processEnabled[typeof(T)];

@@ -10,7 +10,7 @@ namespace Wisp
 {
     public class Node
     {
-        
+
         public Node parent = null;
         public string Name { get; set; } = null;
         private Vector2 pos;
@@ -21,7 +21,7 @@ namespace Wisp
         private List<Node> children = new List<Node>();
         private Dictionary<Type, Component> components = new Dictionary<Type, Component>();
         public IReadOnlyDictionary<Type, Component> Components { get { return components; } }
-        public IReadOnlyList<Node> Children { get { return children;  } }
+        public IReadOnlyList<Node> Children { get { return children; } }
 
         public NodeManager nodeManager;
         protected bool _active = true;
@@ -54,7 +54,8 @@ namespace Wisp
             foreach (var child in children) child.UpdateScenePos();
         }
 
-        public int SceneLayer {
+        public int SceneLayer
+        {
             get { return parent != null ? parent.SceneLayer : Layer; }
         }
 
@@ -104,7 +105,7 @@ namespace Wisp
 
         public T GetComponent<T>() where T : Component => (T)GetComponent(typeof(T));
 
-        public Component GetComponent(Type type) 
+        public Component GetComponent(Type type)
         {
             components.TryGetValue(type, out Component component);
             return component;
@@ -162,7 +163,7 @@ namespace Wisp
         }
 
         public Vector2 Centre => Size.ToVector2() / 2;
-        public Vector2 CentrePos => Pos + Centre;    
+        public Vector2 CentrePos => Pos + Centre;
     }
 
     public class NodeManager
@@ -171,7 +172,9 @@ namespace Wisp
         private Dictionary<Type, List<Component>> components;
         public bool nodesChanged;
         public int nodeChanges = 0;
-        
+
+        public IEnumerable<Type> ComponentTypes => components.Keys;
+
         public NodeManager()
         {
             Nodes = new List<Node>();
@@ -194,7 +197,7 @@ namespace Wisp
         }
 
         public void AddNode(Node node, Vector2 pos, int layer = -1)
-        {    
+        {
             node.Pos = pos;
             if (layer == -1) AddNode(node);
             else AddNode(node, layer);
@@ -209,7 +212,8 @@ namespace Wisp
             nodesChanged = true;
         }
 
-        public void ClearNodes() {
+        public void ClearNodes()
+        {
             Nodes.Clear();
             components.Clear();
         }
@@ -226,7 +230,7 @@ namespace Wisp
 
             return null;
         }
- 
+
         public IReadOnlyCollection<Component> GetComponents(Type type)
         {
             components.TryGetValue(type, out var list);
@@ -246,13 +250,14 @@ namespace Wisp
             return results;
         }
 
-        public IReadOnlyCollection<Node> GetNodesByComponent<T>() where T: Component
+        public IReadOnlyCollection<Node> GetNodesByComponent<T>() where T : Component
         {
             return GetNodesByComponent(typeof(T));
         }
 
-        public void Update() {
-            if (nodesChanged) UpdateNodes();      
+        public void Update()
+        {
+            if (nodesChanged) UpdateNodes();
         }
 
         private void UpdateNodes()
@@ -272,7 +277,8 @@ namespace Wisp
 
         private void AddComponents(Node node)
         {
-            foreach (var item in node.Components) {
+            foreach (var item in node.Components)
+            {
                 AddComponent(item.Key, item.Value);
             }
         }
@@ -285,12 +291,12 @@ namespace Wisp
             }
 
             components[type].Add(component);
-        }      
+        }
     }
 
     static class NodeSorter
     {
-        public static int Compare(Node a, Node b) 
+        public static int Compare(Node a, Node b)
         {
             var diff = a.Layer - b.Layer;
             if (diff == 0) diff = a.DepthSortValue - b.DepthSortValue;
