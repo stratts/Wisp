@@ -9,7 +9,7 @@ namespace Wisp.Components
         public float accel;
         public Vector2 velocity;
         public float maxVelocity;
-        public float frictionMultiplier;
+        public float frictionMultiplier = 1;
         public float bounciness;
         public Vector2 bonusVelocity;
 
@@ -40,18 +40,20 @@ namespace Wisp.Components
 
             Parent.Pos += (move.velocity + move.bonusVelocity) * elapsed;
 
-            var friction = new Vector2(scene.friction * move.frictionMultiplier * elapsed);
-            if (friction.X > Math.Abs(move.velocity.X)) friction.X = Math.Abs(move.velocity.X);
-            if (friction.Y > Math.Abs(move.velocity.Y)) friction.Y = Math.Abs(move.velocity.Y);
-
-            // Apply friction
-            if (move.velocity.X > 0) move.velocity.X -= friction.X;
-            else if (move.velocity.X < 0) move.velocity.X += friction.X;
-            if (move.velocity.Y > 0) move.velocity.Y -= friction.Y;
-            else if (move.velocity.Y < 0) move.velocity.Y += friction.Y;
+            var friction = scene.friction * move.frictionMultiplier * elapsed;
+            move.velocity = ApplyFriction(move.velocity, friction);
+            move.bonusVelocity = ApplyFriction(move.bonusVelocity, friction);
 
             if (Math.Abs(move.velocity.X) < 2) move.velocity.X = 0;
             if (Math.Abs(move.velocity.Y) < 2) move.velocity.Y = 0;
+        }
+
+        public Vector2 ApplyFriction(Vector2 velocity, float friction)
+        {
+            Vector2 frictionVector;
+            frictionVector.X = -Math.Sign(velocity.X) * MathHelper.Clamp(friction, 0, Math.Abs(velocity.X));
+            frictionVector.Y = -Math.Sign(velocity.Y) * MathHelper.Clamp(friction, 0, Math.Abs(velocity.Y));
+            return velocity + frictionVector;
         }
     }
 }
