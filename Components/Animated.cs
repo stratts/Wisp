@@ -28,6 +28,7 @@ namespace Wisp.Components
         public IEnumerable<AnimationTrack> Tracks => group.CurrentAnimation.Tracks;
         public void Update(float elapsed) => group.CurrentAnimation.Update(elapsed);
         public void Reset() => group.CurrentAnimation.Reset();
+        public void End() => group.CurrentAnimation.End();
         public bool Finished => group.CurrentAnimation.Finished;
 
         public override void Update(Scene scene)

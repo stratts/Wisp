@@ -88,6 +88,18 @@ namespace Wisp
             Update(time);
         }
 
+        public void End()
+        {
+            float max = 0;
+
+            foreach (var track in Tracks)
+            {
+                if (track.Length > max) max = track.Length;
+            }
+
+            time = max;
+        }
+
         [JsonIgnore]
         public bool Finished
         {
